@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Resultados de búsqueda{% endblock %}
+{% block content %}
+<div>
+    <h3>Resultados para: {{ search }}</h3>
+    <ul>
+        {% for i in info %}
+            <li>{{ i }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
