@@ -23,9 +23,12 @@ def buscar():
     
     url = f"https://listado.mercadolibre.com.ar/{search}#D[A:{search}]"
     
-    print(url)
+    info = WebScraper.extraer_urls(url, tags_dict)
     
-    return render_template('resultados.html')    
+    print(url)
+    print(info)
+    
+    return render_template('resultados.html', search=search, info=info)    
         
 
 
