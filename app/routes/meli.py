@@ -4,6 +4,7 @@ from app.scraper import WebScraper
 bp = Blueprint('scraper-meli', __name__, url_prefix='/scraper-meli' )
 
 tags_dict = {
+    'url_ficha': "//a[@class='poly-component__title']",
     'nombre_producto': "//h1[@class='ui-pdp-title']",
     'precio_actual': "//span[@class='andes-money-amount ui-pdp-price__part andes-money-amount--cents-superscript andes-money-amount--compact']",
     'precio_antes': "//s[@class='andes-money-amount ui-pdp-price__part ui-pdp-price__original-value andes-money-amount--previous andes-money-amount--cents-superscript andes-money-amount--compact']",
@@ -23,18 +24,8 @@ def buscar():
     
     url = f"https://listado.mercadolibre.com.ar/{search}#D[A:{search}]"
     
-    info = WebScraper.extraer_urls(url, tags_dict)
-    
-    print(url)
-    print(info)
-    
+    scraper = WebScraper()
+    info = scraper.extraer_urls(url, tags_dict)
+        
     return render_template('resultados.html', search=search, info=info)    
         
-
-
-'''
-info=info , search=search
-scraper = WebScraper(url)
-titulos = scraper.extraer_urls(url_ficha, tags_dict)
-'''
-

@@ -13,12 +13,10 @@ class WebScraper:
         """Configura el driver de Selenium."""
         options = Options()
         options.add_argument("--no-sandbox")  # Desactiva el sandboxing
-        '''
         options.add_argument("--headless")    # Ejecuta en modo headless
         options.add_argument("--disable-dev-shm-usage")  # Evita problemas de memoria
         options.add_argument("--disable-gpu")  # Desactiva la GPU
         options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-        '''
         self.driver = webdriver.Chrome(options=options)
 
     def extraer_urls(self, url, tags_dict):
@@ -36,12 +34,12 @@ class WebScraper:
             )
 
             # Extraer todos los enlaces de la página
-            self.enlace_ficha = []
-            enlaces = self.driver.find_elements(By.XPATH, url_ficha)
+            enlace_ficha = []
+            enlaces = self.driver.find_elements(By.XPATH, tags_dict['url_ficha'])
             for enlace in enlaces:
                 href = enlace.get_attribute("href")
                 if href:
-                    self.enlace_ficha.append(href)
+                    enlace_ficha.append(href)
 
         except Exception as e:
             print(f"Error al extraer URLs: {e}")
@@ -55,14 +53,21 @@ class WebScraper:
         cuotas = []
         envio = []
         
-        if self.enlace_ficha:
-            print(f'No está vacío, tiene longitud: {len(self.enlace_ficha)}')
+        if enlace_ficha:
+            print(f'No está vacío, tiene longitud: {len(enlace_ficha)}')
             # recorremos las url
-            for recorrido in self.enlace_ficha:
+            for recorrido in enlace_ficha:
                 # empezamos a recorrer los url de ficha productos y extramos la info
                 # extraemos nombre_producto
+            
                 try:
                     self.driver.get(recorrido)
+                    
+                    try:
+                        WebDriverWait(self.driver, 20).until(
+                        EC.presence_of_element_located((By.TAG_NAME, "body")))
+                    except Exception as e:
+                        print(e)
                     
                     # extraemos el name
                     try:
@@ -106,7 +111,7 @@ class WebScraper:
                         
                     # extraemos info envio
                     try:
-                        envio_info = self.driver.find_element(By.XPATH, tags_dict['envio']).text.replace('\n', '').replace('\r', '').replace('\t', '').strip()
+                        envio_info = self.driver.find_element(By.XPATH, tags_dict['envio']).text()
                         envio.append(envio_info)
                     except Exception as e:
                         print(f"Error al extraer datos de {recorrido}: {e}")
@@ -125,7 +130,8 @@ class WebScraper:
             'precio_antes': precio_antes,
             'porcentaje_descuento': porcentaje_descuento,
             'cuotas': cuotas,
-            'envio': envio
+            'envio': envio,
+            'url_ficha': enlace_ficha
         }
         
         
